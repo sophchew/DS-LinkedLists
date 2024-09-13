@@ -1,5 +1,19 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+
+        MyLL<String> testLL = new MyLL<String>();
+        System.out.println(testLL);
+        System.out.println(testLL.size());
+       for(int i = 0;  i<10; i++) {
+           testLL.add("HI"+ i);
+       }
+
+        System.out.println(testLL.remove("HI0"));
+       testLL.remove(3);
+     System.out.println(testLL);
+
+
+
+
     }
 }

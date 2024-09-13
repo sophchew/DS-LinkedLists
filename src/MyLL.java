@@ -1,13 +1,39 @@
 
-public class MyLL {
+public class MyLL<E> {
     /*
         Note: All Object return types should be modified to utilize Generics instead
      */
 
+    private Node head;
+
     /**
      * Adds item to end of LL
      */
-    public void add(Object item) {
+    public class Node {
+        private E data;
+        private Node pointer;
+        public Node (E data) {
+            this.data = data;
+            this.pointer = null;
+        }
+
+        public Node getPointer(){
+            return pointer;
+        }
+
+    }
+
+    public void add(E item) {
+        if(head == null) {
+            head = new Node(item);
+            return;
+        }
+        Node currentNode = head;
+
+        while(currentNode.getPointer() != null) {
+            currentNode = currentNode.getPointer();
+        }
+        currentNode.pointer = new Node(item);
 
     }
 
@@ -15,14 +41,31 @@ public class MyLL {
      * Adds item at specified index value. If item already exists, item at current index is shuffled one index to the right.
      * Should ensure a proper index is specified. True means addition was successful, false if not.
      */
-    public boolean add(int index, Object item) {
-        return false;
+    public boolean add(int index, E item) {
+        // not done
+        int currentIndex = 0;
+        Node currentNode = head;
+        while(currentIndex != index) {
+            currentNode = currentNode.getPointer();
+            currentIndex++;
+            if(currentNode == null) {
+                return false;
+            }
+        }
+        Node ogPointer = currentNode.getPointer();
+        currentNode.pointer = new Node(item);
+        if(ogPointer != null) {
+            currentNode.getPointer().pointer = ogPointer;
+        }
+
+        return true;
     }
 
     /**
      * Add to start of LL. If existing element is there, ensure it, and all following nodes, are moved down one index.
      */
     public void addFirst(Object item){
+
 
     }
 
@@ -106,15 +149,59 @@ public class MyLL {
     /**
      * Removes and returns the object at index. Removal behavior should mimic that of an ArrayList.
      * */
-    public Object remove(int index){
-        return null;
+    public E remove(int index){
+        // given node at certain index
+        // get previous node and change pointer to following node
+        // also need to return removed node (.data)
+        int count = 0;
+        Node currentNode = head;
+        if(currentNode == null || index >= this.size()) {
+            return null;
+        }
+        while(count < index-1){
+            currentNode = currentNode.getPointer();
+            count++;
+        }
+        // count is now one less than index, currentNode is one before removed node
+
+        if (index == 0) { // if removing the head
+            Node removedNode = head;
+            head = currentNode.getPointer();
+            return removedNode.data;
+        }
+        Node removedNode = currentNode.getPointer();
+        currentNode.pointer = removedNode.getPointer();
+
+        return removedNode.data;
     }
 
     /**
      * Removes and returns the first instance of found object. Should find object based on value of the object, not memory.
      * */
-    public Object remove(Object obj){
+    public E remove(E obj){
+
+        Node currentNode = head;
+        Node prevNode = null;
+
+
+        while(currentNode != null && !obj.equals(currentNode.data)) {
+            prevNode = currentNode;
+            currentNode = currentNode.getPointer();
+
+        }
+        if(currentNode == null) {
             return null;
+        }
+
+        if(currentNode == head) { // if removing head
+            Node removedNode = head;
+            head = currentNode.getPointer();
+            return removedNode.data;
+        }
+        prevNode.pointer = currentNode.getPointer();
+        return currentNode.data;
+
+
     }
 
     /**
@@ -128,7 +215,13 @@ public class MyLL {
      * Returns the number of items in the LL
      * */
     public int size() {
-        return 0;
+        Node currentNode = head;
+        int count = 0;
+        while(currentNode != null){
+            count++;
+            currentNode = currentNode.getPointer();
+        }
+        return count;
     }
 
     /**
@@ -140,7 +233,15 @@ public class MyLL {
 
     //Outputs the entire LL - one node per line
     public String toString() {
-        return null;
+        int index = 0;
+        Node currentNode = head;
+        String toReturn = "";
+        while(currentNode != null){
+            toReturn +=  index + ": " + currentNode.data + "\n";
+            index++;
+            currentNode = currentNode.getPointer();
+        }
+        return toReturn;
     }
 
 }
