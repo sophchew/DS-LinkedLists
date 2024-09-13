@@ -8,8 +8,8 @@ public class Main {
            testLL.add("HI"+ i);
        }
 
-        System.out.println(testLL.remove("HI0"));
-       testLL.remove(3);
+        //System.out.println(testLL.remove("HI0"));
+       System.out.println(testLL.remove(-1));
      System.out.println(testLL);
 
 

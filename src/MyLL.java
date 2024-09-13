@@ -43,21 +43,34 @@ public class MyLL<E> {
      */
     public boolean add(int index, E item) {
         // not done
+        // when index = currentIndex
+        // set previous pointer to new node
+        // set new node pointer to previous node's og pointer
         int currentIndex = 0;
         Node currentNode = head;
-        while(currentIndex != index) {
-            currentNode = currentNode.getPointer();
-            currentIndex++;
-            if(currentNode == null) {
-                return false;
-            }
-        }
-        Node ogPointer = currentNode.getPointer();
-        currentNode.pointer = new Node(item);
-        if(ogPointer != null) {
-            currentNode.getPointer().pointer = ogPointer;
+        Node prevNode = null;
+
+        if(index > this.size()) {
+            return false;
+        } else if (index == this.size()){ // end of list
+            this.add(item);
         }
 
+        while(currentIndex < index) {
+            prevNode = currentNode;
+            currentNode = currentNode.getPointer();
+            currentIndex++;
+
+        }
+        Node newNode = new Node(item);
+        //for beginning of list, set head = new node
+        if(index == 0) { // beginning of list doesn't have a previous node
+            head = newNode;
+        } else {
+            // if not beginning of list, need to set prev node pointer to new node, new node pointer to next node
+            prevNode.pointer = newNode;
+            newNode.pointer = currentNode;
+        }
         return true;
     }
 
@@ -155,10 +168,10 @@ public class MyLL<E> {
         // also need to return removed node (.data)
         int count = 0;
         Node currentNode = head;
-        if(currentNode == null || index >= this.size()) {
+        if(currentNode == null || index >= this.size() || index < 0) {
             return null;
         }
-        while(count < index-1){
+        while(count < index-1) {
             currentNode = currentNode.getPointer();
             count++;
         }
