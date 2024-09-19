@@ -65,7 +65,9 @@ public class MyLL<E> {
         Node newNode = new Node(item);
         //for beginning of list, set head = new node
         if(index == 0) { // beginning of list doesn't have a previous node
+            newNode.pointer = head;
             head = newNode;
+
         } else {
             // if not beginning of list, need to set prev node pointer to new node, new node pointer to next node
             prevNode.pointer = newNode;
@@ -77,85 +79,159 @@ public class MyLL<E> {
     /**
      * Add to start of LL. If existing element is there, ensure it, and all following nodes, are moved down one index.
      */
-    public void addFirst(Object item){
-
-
+    public void addFirst(E item){
+        // make node, set item pointer to head, set head to item
+        Node newNode = new Node(item);
+        if(head != null){
+            newNode.pointer = head;
+        }
+        head = newNode;
     }
 
     /**
      * Add to end of LL. If existing element is there, it should go after last item..
      */
-    public void addLast(Object item) {
-
+    public void addLast(E item) {
+        add(item);
     }
 
     /**
      * Should remove all Nodes within the LL.
      * */
     public void clear() {
+        head = null;
 
     }
 
     /**
      * Searches the LL for a matching object (in context of object's value, not memory)
      * */
-    public boolean contains(Object item){
+    public boolean contains(E item){
+        Node currentNode = head;
+
+        while(currentNode != null) {
+            if(currentNode.data.equals(item)){
+                return true;
+            }
+            currentNode = currentNode.getPointer();
+        }
+
         return false;
     }
 
     /**
      * Returns object at specified index. Should return null if invalid range is selected.
      * */
-    public Object get(int index){
-        return false;
+    public E get(int index){
+        Node currentNode = head;
+        int currentIndex = 0;
+        if(index >= this.size()){
+            return null;
+        }
+        while(currentNode != null) {
+            if(currentIndex == index){
+                return currentNode.data;
+            }
+            currentIndex++;
+            currentNode = currentNode.getPointer();
+
+        }
+        return null;
     }
 
     /**
      * Returns object when found. Should be based on value of object. Null if object can't be found.
      * */
-    public Object get(Object item){
-        return false;
+    public E get(E item){ // test some more
+        Node currentNode = head;
+        while(currentNode != null) {
+            if(currentNode.data.equals(item)){
+                return currentNode.data;
+            }
+            currentNode = currentNode.getPointer();
+        }
+
+        return null;
     }
 
     /**
      * Returns object at first index. Should return null if LL is empty.
      * */
-    public Object getFirst(){
-        return false;
+    public E getFirst(){
+        if(head != null) {
+            return head.data;
+        }
+        return null;
     }
 
     /**
      * Spoilers: Gets you the last item in the LL. Null if LL is empty.
      * */
-    public Object getLast(){
-        return false;
+    public E getLast(){
+        Node currentNode = head;
+        if(currentNode == null){
+            return null;
+        }
+        while(currentNode.getPointer() != null){
+            currentNode = currentNode.getPointer();
+        }
+
+        return currentNode.data;
     }
 
     /**
      * Returns index value of where item is. If item is not found, return -1. Should be based on value of object not memory..
      * */
-    public int indexOf(Object item){
+    public int indexOf(E item){
+        int currentIndex = 0;
+        Node currentNode = head;
+        while(currentIndex<this.size()){
+            if(currentNode.data.equals(item)){
+                return currentIndex;
+            }
+            currentNode = currentNode.getPointer();
+            currentIndex++;
+        }
+
         return -1;
     }
 
     /**
      * Returns LAST index value of where item is. If item is not found, return -1. Should be based on value of object not memory..
      * */
-    public int lastIndexOf(Object item){
-        return -1;
+    public int lastIndexOf(E item){
+        int currentIndex = 0;
+        Node currentNode = head;
+        int lastIndexFound = -1;
+
+        while(currentNode != null) {
+            if(currentNode.data.equals(item)){
+                lastIndexFound = currentIndex;
+            }
+            currentNode = currentNode.getPointer();
+            currentIndex++;
+        }
+
+        return lastIndexFound;
     }
 
     /**
      * Removes and returns the node at index 0. Return null if LL is empty.
      * */
-    public Object poll(){
+    public E poll(){
+        if(head != null){
+            return this.remove(0);
+        }
         return null;
     }
 
     /**
      * Removes and returns the last node. Return null if LL is empty.
      * */
-    Object pollLast() {
+    public E pollLast() {
+        if(head != null) {
+            return this.remove(this.size()-1);
+        }
         return null;
     }
 
@@ -220,7 +296,36 @@ public class MyLL<E> {
     /**
      * Replaces object at specified index if possible. If index is one out of range, should be treated as an insert. Return the object being removed. Null if invalid index.
      * */
-    public Object set(int index, Object item) {
+    public E set(int index, E item) {
+        int currentIndex = 0;
+        Node currentNode = head;
+        Node prevNode = null;
+        if(index > this.size() || index < 0) {
+            return null;
+        }
+        if(index == this.size()) {
+            this.add(item);
+            return item;
+        }
+        Node newNode = new Node(item);
+        if(index == 0) {
+            newNode.pointer = head.getPointer();
+            E toReturn = head.data;
+            head = newNode;
+            return toReturn;
+        }
+        while(currentNode != null)  {
+            if(currentIndex == index) {
+                newNode.pointer = currentNode.getPointer();
+                E toReturn = currentNode.data;
+                prevNode.pointer = newNode;
+                return toReturn;
+            }
+            prevNode = currentNode;
+            currentNode = currentNode.getPointer();
+            currentIndex++;
+        }
+
         return null;
     }
 
@@ -240,8 +345,15 @@ public class MyLL<E> {
     /**
      *  The boolean determines whether you start at Index 0 or Index 1. You will remove the starting index and then continuously remove every OTHER node in the LL. You should then have a new LL of the removed Nodes returned.
      * */
-    public MyLL skipWithAHop(boolean skipState){
-        return null;
+    public MyLL skipWithAHop(boolean skipState) {
+        // 0 is true, 1 is false
+        int startingIndex = skipState ? 0 : 1;
+        MyLL removedNodes = new MyLL();
+        System.out.println(startingIndex);
+        for(int i = startingIndex; i < this.size(); i++) {
+            removedNodes.add(this.remove(i));
+        }
+        return removedNodes;
     }
 
     //Outputs the entire LL - one node per line
